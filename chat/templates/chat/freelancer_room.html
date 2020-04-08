@@ -1,0 +1,136 @@
+{% extends "freelancer/base.html" %}
+{% block content %}
+    <p>Room chat of :{{room_name}}</p>
+    <ul class="list-group" id="chat-log"></ul>
+    <input id="chat-message-input" type="text" size="100"><br>
+    <input id="chat-message-submit" type="button" value="Send">
+    
+    <script>
+        // const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const roomName = '{{ room_name }}';
+        const username = '{{ user.username }}';
+        const creator = '{{creator}}';
+        console.log(username);
+
+        const chatSocket = new ReconnectingWebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/freelancer/room/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onopen = function(e){
+            fetchMessages();
+        }
+
+        function fetchMessages(){
+            chatSocket.send(JSON.stringify({'command':'fetch_messages'}))
+        }
+
+        function createMessage(message){
+            var msgListTag = document.createElement('li');
+            msgListTag.className='mb-4 list-group-item'
+            var pTag=document.createElement('div');
+            var dTag=document.createElement('div');
+
+            var aTag=document.createElement('a');
+            aTag.textContent='by '+message.author;
+            if(username == creator )
+            {
+                aTag.href="/freelancer/requirement/"+roomName+"/"+message.author+"/confirm/";
+            }
+            // requirement/<str:room_name>/<str:provider>/<str:performer>/chat/
+            else{
+                aTag.href="#";
+            }
+
+            if(message.author === username )
+            {
+                aTag.href="#";
+            }
+
+
+            aTag.className='text-muted text-sm';
+
+            var tTag=document.createElement('p');
+            tTag.className='text-muted text-sm';
+            var times=message.timestamp.split(".")
+
+            tTag.textContent='at '+ times[0] ;
+            dTag.className='clear-fix';
+            pTag.textContent=message.content+"   : ";
+
+            
+            if(message.author === username )
+            {
+                pTag.className='float-right';
+                if(message.author == creator)
+                {
+                    msgListTag.className='text-success lead  mb-4 list-group-item';
+                }
+
+                
+                
+            }
+            else{
+                pTag.className='float-left';
+                if(message.author == creator)
+                {
+                    msgListTag.className='text-success lead  mb-4 list-group-item';
+                }
+                
+            }
+            pTag.appendChild(aTag);
+            pTag.appendChild(tTag);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(dTag);
+            
+            document.querySelector('#chat-log').appendChild(msgListTag);
+        }
+
+        chatSocket.onmessage = function(e) 
+        {
+            
+            const data = JSON.parse(e.data);
+
+            if(data['command'] === 'messages'){
+                for(let i=0; i <data['messages'].length;i++){
+                    createMessage(data['messages'][i]);
+                }
+
+            }
+            else if (data['command'] === 'new_message'){
+                createMessage(data['message']);
+            }
+            
+
+            
+        };
+
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'command':'new_message'
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+    <hr>
+    <a href="#" class="btn btn-info">Go Back</a>
+
+{% endblock %}

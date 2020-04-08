@@ -1,0 +1,13 @@
+{% extends "freelancer/base.html" %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend>Complete Project:</legend>
+            <p>Are you sure want to Delete project  : {{room_name}} performing with the : {{performer}}</p>
+            <button type="submit" class="btn btn-warning">Sure , Confirm</button>
+            <a href="/freelancer/requirement/{{room_name}}/{{performer}}/chat/" class="btn btn-info">Cancel !</a>
+        </fieldset>
+    </form>
+{% endblock content %}

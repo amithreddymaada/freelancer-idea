@@ -1,0 +1,16 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <form method="POST" >
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend>New Requirement</legend>
+                {{ form|crispy }}
+                
+            </fieldset>
+            <button type="submit">post </button>
+        </form>
+        <a href="{% url 'freelancer-list' %}" class="btn btn-info">Return Back</a>
+    </div>
+{% endblock content %}

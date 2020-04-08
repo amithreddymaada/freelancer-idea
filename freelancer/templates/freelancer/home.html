@@ -1,0 +1,20 @@
+{% extends "freelancer/base.html" %}
+{% block content %}
+    {% if requirement_list %}
+        <ul class="list-group">
+            {% for requirement in requirement_list %}
+                <li class="list-group-item">
+                    <p class='lead text-bold'>Asked by : {{ requirement.author }}</p>
+                    <p>Title : {{requirement.title}}  -- {{ requirement.content }}</p>
+                    <a href="{% url 'freelancer-delete' requirement.id %}" class='btn btn-danger float-right'>Delete</a>
+                    <a href="{% url 'freelancer-update' requirement.id %}" class='btn btn-success float-right mr-2'>Update</a>
+                    <a href="requirement/{{requirement.title}}/{{requirement.author}}/room/" class='btn btn-info'>Intrested? Join the Room</a>
+                </li>
+                <br><br>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h1 class='site-header lead'>There are no requirements Yet .We'll notify you when posted .</h1>
+        <small class='text-sm text-muted '>Thanks! for visiting</small>
+    {% endif %}
+{% endblock content %}

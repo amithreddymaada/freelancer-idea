@@ -1,0 +1,14 @@
+{% extends "freelancer/base.html" %}
+{% block content %}
+    <div class="container">
+        <form method="POST" >
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend>Delete Requirement</legend>
+                <h2>Are you sure you want to delete the Post {{object.title}}</h2>
+            </fieldset>
+            <button type="submit" class="btn btn-danger">sure , delete</button><br><br>
+            <a href="{%url 'freelancer-list' %}" class="btn btn-success">Cancel </a>
+        </form>
+    </div>
+{% endblock content %}
